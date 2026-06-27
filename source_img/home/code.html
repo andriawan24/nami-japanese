@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Nami Japanese - Dashboard</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Plus+Jakarta+Sans:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Design System Config -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "primary-container": "#e57373",
+                    "on-secondary": "#ffffff",
+                    "on-background": "#1a1c1a",
+                    "inverse-surface": "#2f312f",
+                    "tertiary-fixed": "#e4e4cc",
+                    "surface-container-high": "#e9e8e5",
+                    "surface-variant": "#e3e2e0",
+                    "error-container": "#ffdad6",
+                    "on-secondary-fixed": "#000767",
+                    "on-secondary-container": "#27308a",
+                    "inverse-on-surface": "#f2f1ee",
+                    "tertiary": "#5e604d",
+                    "on-primary-fixed": "#410007",
+                    "surface-container-low": "#f4f3f1",
+                    "primary": "#a03e40",
+                    "on-tertiary": "#ffffff",
+                    "on-primary": "#ffffff",
+                    "secondary-fixed": "#e0e0ff",
+                    "on-error": "#ffffff",
+                    "outline": "#897271",
+                    "on-primary-fixed-variant": "#80272b",
+                    "on-primary-container": "#5e0c15",
+                    "surface-container-highest": "#e3e2e0",
+                    "surface": "#faf9f6",
+                    "on-secondary-fixed-variant": "#343d96",
+                    "secondary-fixed-dim": "#bdc2ff",
+                    "inverse-primary": "#ffb3b1",
+                    "surface-bright": "#faf9f6",
+                    "tertiary-fixed-dim": "#c8c8b0",
+                    "on-surface": "#1a1c1a",
+                    "secondary-container": "#959efd",
+                    "secondary": "#4c56af",
+                    "surface-dim": "#dbdad7",
+                    "outline-variant": "#dcc0bf",
+                    "on-error-container": "#93000a",
+                    "tertiary-container": "#969781",
+                    "surface-container": "#efeeeb",
+                    "on-tertiary-fixed": "#1b1d0e",
+                    "on-surface-variant": "#564241",
+                    "primary-fixed": "#ffdad8",
+                    "surface-tint": "#a03e40",
+                    "surface-container-lowest": "#ffffff",
+                    "on-tertiary-fixed-variant": "#474836",
+                    "primary-fixed-dim": "#ffb3b1",
+                    "background": "#faf9f6",
+                    "on-tertiary-container": "#2e2f1f",
+                    "error": "#ba1a1a"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "xs": "8px",
+                    "lg": "24px",
+                    "container-padding": "20px",
+                    "gutter": "16px",
+                    "sm": "12px",
+                    "xl": "32px",
+                    "base": "4px",
+                    "md": "16px"
+            },
+            "fontFamily": {
+                    "body-lg": ["Inter"],
+                    "body-md": ["Inter"],
+                    "headline-lg": ["Plus Jakarta Sans"],
+                    "display-kana": ["Plus Jakarta Sans"],
+                    "headline-md": ["Plus Jakarta Sans"],
+                    "label-lg": ["Inter"],
+                    "label-sm": ["Inter"]
+            },
+            "fontSize": {
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "headline-lg": ["28px", {"lineHeight": "36px", "fontWeight": "700"}],
+                    "display-kana": ["80px", {"lineHeight": "96px", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                    "headline-md": ["22px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "label-lg": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.08em", "fontWeight": "500"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #faf9f6;
+            color: #1a1c1a;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .washi-texture {
+            background-image: url("https://www.transparenttextures.com/patterns/natural-paper.png");
+            opacity: 0.3;
+        }
+        .soft-glow {
+            box-shadow: 0 4px 12px rgba(76, 86, 175, 0.05);
+        }
+        .sakura-drift {
+            position: absolute;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.15;
+        }
+        .progress-ring {
+            transition: stroke-dashoffset 0.8s ease-out;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="font-body-md min-h-screen pb-32">
+<!-- Washi Overlay -->
+<div class="fixed inset-0 washi-texture pointer-events-none z-[-1]"></div>
+<!-- Top App Bar -->
+<header class="bg-surface/80 backdrop-blur-md border-b border-tertiary/10 docked full-width top-0 sticky z-50 flex justify-between items-center w-full px-container-padding py-sm">
+<div class="flex items-center gap-md">
+<button class="material-symbols-outlined text-primary hover:bg-surface-container-high transition-colors p-2 rounded-full">menu</button>
+<div class="flex flex-col">
+<h1 class="font-headline-md text-headline-md text-primary tracking-tight">Nami Japanese</h1>
+</div>
+</div>
+<button class="material-symbols-outlined text-primary hover:bg-surface-container-high transition-colors p-2 rounded-full">account_circle</button>
+</header>
+<main class="px-container-padding pt-lg space-y-lg relative overflow-hidden">
+<!-- Floating Sakura Details (Decorative) -->
+<div class="sakura-drift top-10 right-[-20px] w-24 h-24">
+<svg fill="#e57373" viewbox="0 0 100 100">
+<path d="M50,0 Q60,20 80,20 Q60,30 60,50 Q40,30 20,20 Q40,20 50,0"></path>
+</svg>
+</div>
+<!-- Hero Section -->
+<section class="space-y-base">
+<h2 class="font-headline-lg text-headline-lg text-on-background">Konnichiwa, Sora</h2>
+<p class="font-body-md text-on-surface-variant italic">Learn Japanese, One Stroke at a Time</p>
+</section>
+<!-- Stats Bento Grid -->
+<section class="grid grid-cols-2 gap-md">
+<!-- Streak Card -->
+<div class="bg-surface-container-lowest rounded-xl p-md soft-glow flex flex-col items-center justify-center border border-tertiary/5">
+<span class="material-symbols-outlined text-primary text-3xl mb-xs" style="font-variation-settings: 'FILL' 1;">local_fire_department</span>
+<span class="font-headline-md text-headline-md text-on-background">5</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest">Day Streak</span>
+</div>
+<!-- Practice Card -->
+<div class="bg-surface-container-lowest rounded-xl p-md soft-glow flex flex-col items-center justify-center border border-tertiary/5">
+<span class="material-symbols-outlined text-secondary text-3xl mb-xs" style="font-variation-settings: 'FILL' 1;">rebase_edit</span>
+<span class="font-headline-md text-headline-md text-on-background">120</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest">Characters</span>
+</div>
+</section>
+<!-- Continue Learning - Feature Card -->
+<section>
+<div class="relative bg-white rounded-xl p-lg soft-glow border border-tertiary/5 overflow-hidden group active:scale-98 transition-transform duration-200">
+<div class="flex items-center justify-between">
+<div class="space-y-xs z-10">
+<span class="px-3 py-1 bg-tertiary-fixed text-on-tertiary-fixed font-label-lg text-label-lg rounded-full">Continue Learning</span>
+<h3 class="font-headline-lg text-headline-lg text-on-background">Hiragana Part 1</h3>
+<p class="font-body-md text-on-surface-variant max-w-[200px]">Master the vowel sounds of Japanese.</p>
+<button class="mt-md bg-primary text-on-primary px-lg py-sm rounded-full font-label-lg text-label-lg flex items-center gap-xs hover:shadow-lg transition-shadow">
+                            Start Lesson
+                            <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+<div class="flex flex-col items-center z-10">
+<div class="w-32 h-32 bg-surface-container flex items-center justify-center rounded-full border-4 border-primary/10">
+<span class="font-display-kana text-display-kana text-primary leading-none">あ</span>
+</div>
+<span class="font-label-lg text-label-lg text-on-surface-variant mt-xs">"a" - Vowel</span>
+</div>
+</div>
+<!-- Abstract BG Motif -->
+<div class="absolute -right-10 -bottom-10 opacity-[0.03] text-[200px] font-display-kana rotate-12 pointer-events-none group-hover:rotate-0 transition-transform duration-500">
+                    あ
+                </div>
+</div>
+</section>
+<!-- Progress Card -->
+<section class="bg-surface-container-low rounded-xl p-md border border-tertiary/10">
+<div class="flex items-center justify-between mb-md">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary">analytics</span>
+<h3 class="font-headline-md text-headline-md">Weekly Progress</h3>
+</div>
+<span class="font-label-lg text-label-lg text-primary">65%</span>
+</div>
+<div class="w-full bg-surface-container-highest h-3 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[65%] rounded-full relative">
+<div class="absolute top-0 right-0 h-full w-4 bg-white/20 animate-pulse"></div>
+</div>
+</div>
+<div class="flex justify-between mt-sm text-on-surface-variant font-label-sm text-label-sm">
+<span>Mon</span>
+<span>Tue</span>
+<span class="text-primary font-bold">Wed</span>
+<span>Thu</span>
+<span>Fri</span>
+<span>Sat</span>
+<span>Sun</span>
+</div>
+</section>
+<!-- Entry Cards (Hiragana / Katakana) -->
+<section class="grid grid-cols-1 gap-md">
+<!-- Hiragana -->
+<div class="flex bg-white rounded-xl overflow-hidden soft-glow border border-tertiary/5 h-32 cursor-pointer hover:bg-surface-container-low transition-colors">
+<div class="w-32 bg-primary-fixed flex items-center justify-center">
+<img class="w-full h-full object-cover opacity-80" data-alt="A delicate digital painting of a Japanese cherry blossom branch in spring, set against a warm ivory background. The style is minimalist and clean, inspired by traditional ink wash painting but with modern, high-definition digital crispness. Warm coral and soft indigo tones dominate the aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDrctXdkKaPn_PcnGAfGwY7G8CLxXeGflPb2j4Gs66u5OmlRxxfnbFhmywhkXuhOHIduvIbmCcUh0D93sie19ap9aqtMPef5cLvQMATMic74suRJG2K0hu1p7ZQlUlOwb8vQc_dkSrkVXv10WlkxW6Em35FeKZsFhIyiljShPgUHOHogEYVb9yFV71pSPaGf_GQtsaUwKoSh62E7jsgS-8WT5LQDUKpu6x9DizOyALgTHfp-1TlZsf2gGgWKq1Y5HqJHguZkdtULZY"/>
+<span class="absolute font-display-kana text-4xl text-on-primary-container">あ</span>
+</div>
+<div class="flex-1 p-md flex flex-col justify-center">
+<h4 class="font-headline-md text-headline-md">Hiragana</h4>
+<p class="font-label-sm text-label-sm text-on-surface-variant">The cursive basic syllabary</p>
+<div class="mt-xs flex items-center text-primary font-label-lg text-label-lg">
+                        Explore <span class="material-symbols-outlined ml-base text-sm">chevron_right</span>
+</div>
+</div>
+</div>
+<!-- Katakana -->
+<div class="flex bg-white rounded-xl overflow-hidden soft-glow border border-tertiary/5 h-32 cursor-pointer hover:bg-surface-container-low transition-colors">
+<div class="w-32 bg-secondary-fixed flex items-center justify-center">
+<img class="w-full h-full object-cover opacity-80" data-alt="A minimalist digital illustration of a Zen rock garden with raked sand patterns. The lighting is soft and diffused, creating a serene and meditative mood. The color palette features warm beiges, soft whites, and a deep indigo accent. The composition is clean and balanced, perfect for a high-end educational interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCh2fHW6QN6un_aow87raywrL-OdVmu8bfZJ82gtZU6DGcJ71ekI3xjGDh8Xckr4c2OlsuYDJ5LXDO2Klrj_V7O5YyTjjHsoHvJS6Kl4f493srkSQ7M531TTQnSdKWBZD4tdO46YeRNzcGGeBgmc7mMOMGAske8pgOa5MHiv86n3k2VM_Xh7M2IA7fp13bQcSyHfgzZaPuDxHgKXVbgAlJgQITW8P7ftgRDDyBGsM_xHsTbc3ZyIDRvY3q-o5rGWIEk-AI-pAJge8Q"/>
+<span class="absolute font-display-kana text-4xl text-on-secondary-container">ア</span>
+</div>
+<div class="flex-1 p-md flex flex-col justify-center">
+<h4 class="font-headline-md text-headline-md">Katakana</h4>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Used for foreign loanwords</p>
+<div class="mt-xs flex items-center text-secondary font-label-lg text-label-lg">
+                        Explore <span class="material-symbols-outlined ml-base text-sm">chevron_right</span>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Bottom Navigation Bar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-4 pt-2 bg-surface/90 backdrop-blur-lg shadow-[0_-4px_12px_rgba(76,86,175,0.05)] rounded-t-xl">
+<a class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full px-5 py-1.5 transition-transform duration-200 scale-98" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">home</span>
+<span class="font-label-sm text-label-sm">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-2 hover:bg-surface-container-highest transition-all" href="#">
+<span class="material-symbols-outlined">menu_book</span>
+<span class="font-label-sm text-label-sm">Kana</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-2 hover:bg-surface-container-highest transition-all" href="#">
+<span class="material-symbols-outlined">rebase_edit</span>
+<span class="font-label-sm text-label-sm">Practice</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-2 hover:bg-surface-container-highest transition-all" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="font-label-sm text-label-sm">Profile</span>
+</a>
+</nav>
+<!-- Micro-interactions Script -->
+<script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Handle card tap effects
+            const cards = document.querySelectorAll('.active\\:scale-98');
+            cards.forEach(card => {
+                card.addEventListener('touchstart', () => {
+                    card.style.transform = 'scale(0.98)';
+                });
+                card.addEventListener('touchend', () => {
+                    card.style.transform = 'scale(1)';
+                });
+            });
+
+            // Gentle float animation for sakura motifs
+            const drifters = document.querySelectorAll('.sakura-drift');
+            drifters.forEach((drifter, index) => {
+                let angle = 0;
+                setInterval(() => {
+                    angle += 0.02;
+                    const y = Math.sin(angle) * 10;
+                    const x = Math.cos(angle) * 5;
+                    drifter.style.transform = `translate(${x}px, ${y}px) rotate(${angle * 10}deg)`;
+                }, 50);
+            });
+        });
+    </script>
+</body></html>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- TODO: Replace with your real Google Cloud Console web client ID.
+         1. Go to https://console.cloud.google.com/apis/credentials
+         2. Create an OAuth 2.0 Client ID (type: Android)
+         3. Also create a Web application client ID and use that value here.
+         4. The web client ID is needed for Credential Manager / Google Identity. -->
+    <string name="google_web_client_id">649350171851-8s96pkci235lcpi936lhea6f38vois7j.apps.googleusercontent.com</string>
+</resources>

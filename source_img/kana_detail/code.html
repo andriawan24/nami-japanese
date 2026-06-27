@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Nami Japanese - Kana Detail</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Plus+Jakarta+Sans:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .washi-texture {
+            background-image: radial-gradient(#F5F5DC 0.5px, transparent 0.5px);
+            background-size: 12px 12px;
+            opacity: 0.3;
+        }
+        .soft-glow {
+            box-shadow: 0 4px 20px -2px rgba(76, 86, 175, 0.08);
+        }
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-4px); }
+            100% { transform: translateY(0px); }
+        }
+        .animate-float {
+            animation: float 4s ease-in-out infinite;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary-container": "#e57373",
+                        "on-secondary": "#ffffff",
+                        "on-background": "#1a1c1a",
+                        "inverse-surface": "#2f312f",
+                        "tertiary-fixed": "#e4e4cc",
+                        "surface-container-high": "#e9e8e5",
+                        "surface-variant": "#e3e2e0",
+                        "error-container": "#ffdad6",
+                        "on-secondary-fixed": "#000767",
+                        "on-secondary-container": "#27308a",
+                        "inverse-on-surface": "#f2f1ee",
+                        "tertiary": "#5e604d",
+                        "on-primary-fixed": "#410007",
+                        "surface-container-low": "#f4f3f1",
+                        "primary": "#a03e40",
+                        "on-tertiary": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "secondary-fixed": "#e0e0ff",
+                        "on-error": "#ffffff",
+                        "outline": "#897271",
+                        "on-primary-fixed-variant": "#80272b",
+                        "on-primary-container": "#5e0c15",
+                        "surface-container-highest": "#e3e2e0",
+                        "surface": "#faf9f6",
+                        "on-secondary-fixed-variant": "#343d96",
+                        "secondary-fixed-dim": "#bdc2ff",
+                        "inverse-primary": "#ffb3b1",
+                        "surface-bright": "#faf9f6",
+                        "tertiary-fixed-dim": "#c8c8b0",
+                        "on-surface": "#1a1c1a",
+                        "secondary-container": "#959efd",
+                        "secondary": "#4c56af",
+                        "surface-dim": "#dbdad7",
+                        "outline-variant": "#dcc0bf",
+                        "on-error-container": "#93000a",
+                        "tertiary-container": "#969781",
+                        "surface-container": "#efeeeb",
+                        "on-tertiary-fixed": "#1b1d0e",
+                        "on-surface-variant": "#564241",
+                        "primary-fixed": "#ffdad8",
+                        "surface-tint": "#a03e40",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary-fixed-variant": "#474836",
+                        "primary-fixed-dim": "#ffb3b1",
+                        "background": "#faf9f6",
+                        "on-tertiary-container": "#2e2f1f",
+                        "error": "#ba1a1a"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xs": "8px",
+                        "lg": "24px",
+                        "container-padding": "20px",
+                        "gutter": "16px",
+                        "sm": "12px",
+                        "xl": "32px",
+                        "base": "4px",
+                        "md": "16px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "display-kana": ["Plus Jakarta Sans"],
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "label-lg": ["Inter"],
+                        "label-sm": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "headline-lg": ["28px", {"lineHeight": "36px", "fontWeight": "700"}],
+                        "display-kana": ["80px", {"lineHeight": "96px", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                        "headline-md": ["22px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "label-lg": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.08em", "fontWeight": "500"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface min-h-screen font-body-md flex justify-center">
+<div class="w-full max-w-[430px] bg-surface min-h-screen pb-32 relative overflow-hidden flex flex-col">
+<!-- Background Decoration -->
+<div class="absolute top-0 right-0 w-64 h-64 bg-primary-fixed/20 rounded-full blur-3xl -mr-32 -mt-32"></div>
+<div class="washi-texture absolute inset-0 pointer-events-none"></div>
+<!-- TopAppBar -->
+<header class="docked full-width top-0 z-40 bg-surface/80 backdrop-blur-md border-b border-tertiary/10 flex justify-between items-center w-full px-container-padding py-sm sticky">
+<button class="hover:bg-surface-container-high transition-colors p-2 rounded-full active:scale-95 duration-150 ease-in-out">
+<span class="material-symbols-outlined text-primary">arrow_back</span>
+</button>
+<h1 class="font-headline-md text-headline-md text-primary tracking-tight">Kana Detail</h1>
+<button class="hover:bg-surface-container-high transition-colors p-2 rounded-full active:scale-95 duration-150 ease-in-out">
+<span class="material-symbols-outlined text-primary">favorite</span>
+</button>
+</header>
+<!-- Main Content -->
+<main class="flex-1 px-container-padding pt-lg space-y-lg relative z-10">
+<!-- Hero Card: Asymmetric Layout -->
+<section class="relative">
+<div class="bg-surface-container-lowest rounded-[32px] p-xl soft-glow border border-tertiary/5 relative overflow-hidden">
+<!-- Background Motif -->
+<div class="absolute -bottom-4 -right-4 opacity-5">
+<span class="material-symbols-outlined text-[160px]">filter_vintage</span>
+</div>
+<div class="flex flex-col items-center">
+<div class="flex justify-between w-full items-start mb-sm">
+<span class="bg-tertiary-fixed text-on-tertiary-fixed px-3 py-1 rounded-full font-label-lg text-label-lg">Hiragana</span>
+<div class="flex items-center gap-1 text-primary">
+<span class="material-symbols-outlined text-md">draw</span>
+<span class="font-label-lg text-label-lg">3 strokes</span>
+</div>
+</div>
+<div class="animate-float py-lg">
+<h2 class="font-display-kana text-display-kana text-primary select-none">あ</h2>
+</div>
+<div class="text-center">
+<p class="font-headline-lg text-headline-lg text-on-surface-variant uppercase tracking-widest">a</p>
+<p class="font-label-sm text-label-sm text-outline mt-1 italic">Vowel sound</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Stats: Bento Style Grid -->
+<section class="grid grid-cols-2 gap-md">
+<div class="bg-surface-container-low p-md rounded-2xl flex flex-col items-center justify-center border border-tertiary/5">
+<span class="material-symbols-outlined text-primary mb-1">history_edu</span>
+<span class="font-headline-md text-headline-md text-on-surface">12</span>
+<span class="font-label-sm text-label-sm text-outline uppercase">Practices</span>
+</div>
+<div class="bg-surface-container-low p-md rounded-2xl flex flex-col items-center justify-center border border-tertiary/5">
+<span class="material-symbols-outlined text-secondary mb-1">verified</span>
+<span class="font-headline-md text-headline-md text-on-surface">98%</span>
+<span class="font-label-sm text-label-sm text-outline uppercase">Best Score</span>
+</div>
+</section>
+<!-- Example Section: Stationery Notebook Style -->
+<section class="space-y-md">
+<div class="flex items-center gap-2 mb-2">
+<span class="w-1 h-6 bg-primary-container rounded-full"></span>
+<h3 class="font-headline-md text-headline-md">Examples</h3>
+</div>
+<div class="bg-surface-container-lowest p-lg rounded-2xl soft-glow space-y-lg border-l-4 border-primary/20">
+<!-- Word -->
+<div class="flex items-start gap-md">
+<div class="bg-primary/5 p-3 rounded-xl">
+<span class="material-symbols-outlined text-primary">translate</span>
+</div>
+<div>
+<p class="font-headline-md text-headline-md text-on-surface">あめ <span class="text-on-surface-variant font-normal">(ame)</span></p>
+<p class="font-body-md text-body-md text-outline">Rain</p>
+</div>
+</div>
+<!-- Divider -->
+<div class="h-[1px] bg-tertiary/10 w-full"></div>
+<!-- Sentence -->
+<div class="space-y-2">
+<p class="font-body-lg text-body-lg text-on-surface leading-relaxed">あめがふっています。</p>
+<p class="font-body-md text-body-md text-on-surface-variant italic">(Ame ga futte imasu.)</p>
+<p class="font-label-lg text-label-lg text-outline bg-surface-container-low inline-block px-2 py-1 rounded">It is raining.</p>
+</div>
+</div>
+</section>
+<!-- Learning Visual Image -->
+<div class="rounded-3xl overflow-hidden h-40 relative group cursor-pointer shadow-lg">
+<div class="absolute inset-0 bg-gradient-to-t from-primary/60 to-transparent z-10"></div>
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="A peaceful and minimalist digital illustration of a rainy day in a Japanese garden. Soft, pale blue and warm beige tones. Delicate raindrops hitting a stone lantern surrounded by moss and Sakura petals. The art style is inspired by modern Japanese stationery with clean lines, soft washes of color, and high-quality paper texture." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCO-6HKzJbZFOHpeZXSxWoSOXAp2ndk5tsM3NyjF-noYX5I8ou05S-529qAjn0iSBxgpT6qhjZKUu-CfQ4sEMZrADuRoKQAFzF0PNSM3PaQ23httWOqN2JUUzuiuLDyyZrGLkPWgtKyPjsoytVGDiJjktZvWy2E0dm48XZXobUrGi27ieoNOfpYROrpsyJxto7n2PwySXHZNIa5XJoOgrxGStpmzabWxVr9r1r2uSYYUmr5n7j88Tk4nh2IvuzbFpspyyDklOpiNzA"/>
+<div class="absolute bottom-4 left-4 z-20">
+<p class="text-white font-label-lg text-label-lg opacity-80 uppercase tracking-tighter">Visual Association</p>
+<p class="text-white font-headline-md text-headline-md">The Umbrella (あ)</p>
+</div>
+</div>
+</main>
+<!-- Quick Actions: Fixed above the BottomNav -->
+<div class="px-container-padding mb-xl space-y-md">
+<div class="flex gap-md">
+<button class="flex-1 bg-surface-container-highest text-on-surface font-label-lg text-label-lg py-4 rounded-2xl flex items-center justify-center gap-2 hover:bg-surface-variant transition-all active:scale-95 shadow-sm">
+<span class="material-symbols-outlined">volume_up</span>
+                    Listen
+                </button>
+<button class="flex-1 bg-surface-container-highest text-on-surface font-label-lg text-label-lg py-4 rounded-2xl flex items-center justify-center gap-2 hover:bg-surface-variant transition-all active:scale-95 shadow-sm">
+<span class="material-symbols-outlined">edit</span>
+                    Practice
+                </button>
+</div>
+<button class="w-full bg-primary text-on-primary font-headline-md text-headline-md py-5 rounded-2xl flex items-center justify-center gap-3 hover:opacity-90 transition-all active:scale-[0.98] shadow-md shadow-primary/20">
+<span class="material-symbols-outlined">quiz</span>
+                Take Quiz
+            </button>
+</div>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-4 pt-2 bg-surface/90 backdrop-blur-lg shadow-[0_-4px_12px_rgba(76,86,175,0.05)] rounded-t-xl">
+<div class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-2 hover:bg-surface-container-highest transition-all">
+<span class="material-symbols-outlined">home</span>
+<span class="font-label-sm text-label-sm">Home</span>
+</div>
+<div class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full px-5 py-1.5 transition-transform duration-200 scale-98">
+<span class="material-symbols-outlined">menu_book</span>
+<span class="font-label-sm text-label-sm">Kana</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-2 hover:bg-surface-container-highest transition-all">
+<span class="material-symbols-outlined">rebase_edit</span>
+<span class="font-label-sm text-label-sm">Practice</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-2 hover:bg-surface-container-highest transition-all">
+<span class="material-symbols-outlined">person</span>
+<span class="font-label-sm text-label-sm">Profile</span>
+</div>
+</nav>
+</div>
+<script>
+        // Micro-interaction for the character listen
+        document.querySelector('button:has(.material-symbols-outlined:contains("volume_up"))').addEventListener('click', () => {
+            const char = document.querySelector('h2');
+            char.classList.add('scale-110', 'text-secondary');
+            setTimeout(() => {
+                char.classList.remove('scale-110', 'text-secondary');
+            }, 300);
+        });
+
+        // Simple stroke drawing visual indicator simulation
+        const heroCard = document.querySelector('.bg-surface-container-lowest');
+        heroCard.addEventListener('mousemove', (e) => {
+            const rect = heroCard.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            heroCard.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(229, 115, 115, 0.05), transparent 60%)`;
+        });
+        heroCard.addEventListener('mouseleave', () => {
+            heroCard.style.background = '';
+        });
+    </script>
+</body></html>
