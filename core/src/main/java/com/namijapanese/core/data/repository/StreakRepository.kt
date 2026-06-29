@@ -12,16 +12,17 @@ import javax.inject.Singleton
 class StreakRepository @Inject constructor(
     private val streakDao: DailyStreakDao
 ) {
-    suspend fun getStreak(): DailyStreak? = 
-        streakDao.getStreak()?.toDomain()
-    
-    suspend fun updateStreak() {
-        val existingStreak = streakDao.getStreak()
+    suspend fun getStreak(ownerId: String): DailyStreak? =
+        streakDao.getStreak(ownerId)?.toDomain()
+
+    suspend fun updateStreak(ownerId: String) {
+        val existingStreak = streakDao.getStreak(ownerId)
         val today = LocalDate.now().toString()
-        
+
         if (existingStreak == null) {
             streakDao.insertOrUpdate(
                 DailyStreakEntity(
+                    ownerId = ownerId,
                     currentStreak = 1,
                     longestStreak = 1,
                     lastPracticeDate = today,
@@ -32,15 +33,15 @@ class StreakRepository @Inject constructor(
             val lastDate = LocalDate.parse(existingStreak.lastPracticeDate)
             val todayDate = LocalDate.parse(today)
             val daysBetween = ChronoUnit.DAYS.between(lastDate, todayDate)
-            
+
             val newCurrentStreak = when {
                 daysBetween == 0L -> existingStreak.currentStreak
                 daysBetween == 1L -> existingStreak.currentStreak + 1
                 else -> 1
             }
-            
+
             val newLongestStreak = maxOf(newCurrentStreak, existingStreak.longestStreak)
-            
+
             streakDao.insertOrUpdate(
                 existingStreak.copy(
                     currentStreak = newCurrentStreak,
@@ -51,7 +52,7 @@ class StreakRepository @Inject constructor(
             )
         }
     }
-    
+
     private fun DailyStreakEntity.toDomain() = DailyStreak(
         currentStreak = currentStreak,
         longestStreak = longestStreak,

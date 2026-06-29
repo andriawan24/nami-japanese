@@ -8,12 +8,16 @@ import androidx.room.PrimaryKey
 @Entity(
     tableName = "practice_sessions",
     indices = [
+        Index(value = ["owner_id"]),
         Index(value = ["practiced_at"])
     ]
 )
 data class PracticeSessionEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
+
+    @ColumnInfo(name = "owner_id")
+    val ownerId: String,
 
     @ColumnInfo(name = "character_id")
     val characterId: String,

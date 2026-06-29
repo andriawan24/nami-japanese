@@ -4,17 +4,21 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -178,9 +182,58 @@ fun LoginScreen(
                         color = MaterialTheme.colorScheme.primary
                     )
                 } else {
+                    // Google Sign-In Button
                     com.namijapanese.core.designsystem.component.NamiPrimaryButton(
                         text = "Continue with Google",
                         onClick = { launchGoogleLogin() },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    // Divider with "or"
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        HorizontalDivider(
+                            modifier = Modifier.weight(1f),
+                            color = MaterialTheme.colorScheme.outlineVariant
+                        )
+                        Text(
+                            text = " or ",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        HorizontalDivider(
+                            modifier = Modifier.weight(1f),
+                            color = MaterialTheme.colorScheme.outlineVariant
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    // Guest Name Input
+                    OutlinedTextField(
+                        value = uiState.guestName,
+                        onValueChange = { viewModel.updateGuestName(it) },
+                        label = { Text("Your name") },
+                        placeholder = { Text("Enter your name") },
+                        isError = uiState.guestNameError != null,
+                        supportingText = uiState.guestNameError?.let { error ->
+                            { Text(error, color = MaterialTheme.colorScheme.error) }
+                        },
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp)
+                    )
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    // Continue as Guest Button
+                    com.namijapanese.core.designsystem.component.NamiPrimaryButton(
+                        text = "Continue as Guest",
+                        onClick = { viewModel.onGuestLogin() },
                         modifier = Modifier.fillMaxWidth()
                     )
                 }

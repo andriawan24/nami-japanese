@@ -4,10 +4,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.namijapanese.core.data.repository.ProgressRepository
 import com.namijapanese.core.data.repository.StreakRepository
+import com.namijapanese.core.datastore.AuthDataStore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -30,21 +32,28 @@ data class ProgressUiState(
 @HiltViewModel
 class ProgressViewModel @Inject constructor(
     private val progressRepository: ProgressRepository,
-    private val streakRepository: StreakRepository
+    private val streakRepository: StreakRepository,
+    private val authDataStore: AuthDataStore
 ) : ViewModel() {
-    
+
     private val _uiState = MutableStateFlow(ProgressUiState())
     val uiState: StateFlow<ProgressUiState> = _uiState.asStateFlow()
-    
+
     init {
         loadData()
     }
-    
+
+    private suspend fun resolveOwnerId(): String {
+        val session = authDataStore.userSessionFlow.first()
+        return session.userId ?: session.googleUserId ?: session.email ?: "local_legacy"
+    }
+
     private fun loadData() {
         viewModelScope.launch {
-            val learned = progressRepository.getAllLearned()
-            val streak = streakRepository.getStreak()
-            
+            val ownerId = resolveOwnerId()
+            val learned = progressRepository.getAllLearned(ownerId)
+            val streak = streakRepository.getStreak(ownerId)
+
             _uiState.update {
                 it.copy(
                     learnedHiragana = learned.count { it.characterId.startsWith("h_") },

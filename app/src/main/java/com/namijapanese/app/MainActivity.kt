@@ -108,7 +108,13 @@ fun NamiNavGraph(
                 onStartHiragana = { navController.navigate(Screen.Hiragana.route) },
                 onStartKatakana = { navController.navigate(Screen.Katakana.route) },
                 onStartQuiz = { navController.navigate(Screen.Quiz.createRoute("hiragana")) },
-                onSettingsClick = { navController.navigate(Screen.Settings.route) }
+                onSettingsClick = { navController.navigate(Screen.Settings.route) },
+                onContinueLearning = { characterId ->
+                    navController.navigate(Screen.KanaDetail.createRoute(characterId))
+                },
+                onContinueLearningList = {
+                    navController.navigate(Screen.Hiragana.route)
+                }
             )
         }
 

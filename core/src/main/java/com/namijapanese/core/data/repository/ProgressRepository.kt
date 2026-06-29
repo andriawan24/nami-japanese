@@ -1,7 +1,9 @@
 package com.namijapanese.core.data.repository
 
+import com.namijapanese.core.database.dao.LearningSessionDao
 import com.namijapanese.core.database.dao.PracticeSessionDao
 import com.namijapanese.core.database.dao.UserProgressDao
+import com.namijapanese.core.database.entity.LearningSessionEntity
 import com.namijapanese.core.database.entity.PracticeSessionEntity
 import com.namijapanese.core.database.entity.UserProgressEntity
 import com.namijapanese.core.model.UserProgress
@@ -11,22 +13,24 @@ import javax.inject.Singleton
 @Singleton
 class ProgressRepository @Inject constructor(
     private val progressDao: UserProgressDao,
-    private val practiceSessionDao: PracticeSessionDao
+    private val practiceSessionDao: PracticeSessionDao,
+    private val learningSessionDao: LearningSessionDao
 ) {
-    suspend fun getProgress(characterId: String): UserProgress? = 
-        progressDao.getProgress(characterId)?.toDomain()
-    
-    suspend fun getAllLearned(): List<UserProgress> = 
-        progressDao.getAllLearned().map { it.toDomain() }
+    suspend fun getProgress(ownerId: String, characterId: String): UserProgress? =
+        progressDao.getProgress(ownerId, characterId)?.toDomain()
 
-    suspend fun getAllProgress(): List<UserProgress> =
-        progressDao.getAllProgress().map { it.toDomain() }
-    
-    suspend fun updateProgress(progress: UserProgress) {
-        val existing = progressDao.getProgress(progress.characterId)
-        
+    suspend fun getAllLearned(ownerId: String): List<UserProgress> =
+        progressDao.getAllLearned(ownerId).map { it.toDomain() }
+
+    suspend fun getAllProgress(ownerId: String): List<UserProgress> =
+        progressDao.getAllProgress(ownerId).map { it.toDomain() }
+
+    suspend fun updateProgress(ownerId: String, progress: UserProgress) {
+        val existing = progressDao.getProgress(ownerId, progress.characterId)
+
         val entity = if (existing != null) {
             UserProgressEntity(
+                ownerId = ownerId,
                 characterId = progress.characterId,
                 isLearned = progress.isLearned || existing.isLearned,
                 practiceCount = existing.practiceCount + 1,
@@ -37,15 +41,15 @@ class ProgressRepository @Inject constructor(
                 createdAt = existing.createdAt
             )
         } else {
-            progress.toEntity()
+            progress.toEntity(ownerId)
         }
-        
+
         progressDao.insertOrUpdate(entity)
     }
 
-    suspend fun updateWritingScore(characterId: String, writingScorePercent: Int) {
+    suspend fun updateWritingScore(ownerId: String, characterId: String, writingScorePercent: Int) {
         val writingScorePart = (writingScorePercent * 0.5).toInt().coerceIn(0, 50)
-        val existing = progressDao.getProgress(characterId)
+        val existing = progressDao.getProgress(ownerId, characterId)
         val now = System.currentTimeMillis()
 
         val entity = if (existing != null) {
@@ -59,6 +63,7 @@ class ProgressRepository @Inject constructor(
             )
         } else {
             UserProgressEntity(
+                ownerId = ownerId,
                 characterId = characterId,
                 isLearned = false,
                 practiceCount = 1,
@@ -73,9 +78,9 @@ class ProgressRepository @Inject constructor(
         progressDao.insertOrUpdate(entity)
     }
 
-    suspend fun updateQuizScore(characterId: String, quizScorePercent: Int) {
+    suspend fun updateQuizScore(ownerId: String, characterId: String, quizScorePercent: Int) {
         val quizScorePart = (quizScorePercent * 0.5).toInt().coerceIn(0, 50)
-        val existing = progressDao.getProgress(characterId)
+        val existing = progressDao.getProgress(ownerId, characterId)
         val now = System.currentTimeMillis()
 
         val entity = if (existing != null) {
@@ -89,6 +94,7 @@ class ProgressRepository @Inject constructor(
             )
         } else {
             UserProgressEntity(
+                ownerId = ownerId,
                 characterId = characterId,
                 isLearned = false,
                 practiceCount = 0,
@@ -102,17 +108,19 @@ class ProgressRepository @Inject constructor(
 
         progressDao.insertOrUpdate(entity)
     }
-    
-    suspend fun getLearnedCount(): Int = 
-        progressDao.getLearnedCount()
+
+    suspend fun getLearnedCount(ownerId: String): Int =
+        progressDao.getLearnedCount(ownerId)
 
     suspend fun recordPracticeSession(
+        ownerId: String,
         characterId: String,
         score: Int?,
         passed: Boolean
     ) {
         practiceSessionDao.insert(
             PracticeSessionEntity(
+                ownerId = ownerId,
                 characterId = characterId,
                 practicedAt = System.currentTimeMillis(),
                 score = score,
@@ -121,9 +129,30 @@ class ProgressRepository @Inject constructor(
         )
     }
 
-    suspend fun getPracticeSessionsBetween(startMillis: Long, endMillis: Long): List<PracticeSessionEntity> =
-        practiceSessionDao.getSessionsBetween(startMillis, endMillis)
-    
+    suspend fun getPracticeSessionsBetween(ownerId: String, startMillis: Long, endMillis: Long): List<PracticeSessionEntity> =
+        practiceSessionDao.getSessionsBetween(ownerId, startMillis, endMillis)
+
+    suspend fun getTodayLearningSessionCount(ownerId: String, startOfDayMillis: Long, startOfTomorrowMillis: Long): Int {
+        val writingSessions = practiceSessionDao.getSessionsBetween(ownerId, startOfDayMillis, startOfTomorrowMillis).size
+        val quizSessions = learningSessionDao.getCompletedSessionsCountBetween(ownerId, startOfDayMillis, startOfTomorrowMillis)
+        return writingSessions + quizSessions
+    }
+
+    suspend fun recordLearningSession(ownerId: String, type: String, score: Int?, charactersLearned: Int) {
+        val now = System.currentTimeMillis()
+        learningSessionDao.insert(
+            LearningSessionEntity(
+                ownerId = ownerId,
+                startTime = now,
+                endTime = now,
+                type = type,
+                charactersLearned = charactersLearned,
+                score = score,
+                completed = true
+            )
+        )
+    }
+
     private fun UserProgressEntity.toDomain() = UserProgress(
         characterId = characterId,
         isLearned = isLearned,
@@ -134,8 +163,9 @@ class ProgressRepository @Inject constructor(
         lastPracticedAt = lastPracticedAt,
         createdAt = createdAt
     )
-    
-    private fun UserProgress.toEntity() = UserProgressEntity(
+
+    private fun UserProgress.toEntity(ownerId: String) = UserProgressEntity(
+        ownerId = ownerId,
         characterId = characterId,
         isLearned = isLearned,
         practiceCount = 1,

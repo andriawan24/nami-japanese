@@ -11,25 +11,26 @@ import javax.inject.Singleton
 class DrawingRepository @Inject constructor(
     private val drawingDao: KanaDrawingDao
 ) {
-    fun observeDrawing(characterId: String): Flow<SavedKanaDrawing?> {
-        return drawingDao.observeDrawing(characterId).map { entity ->
+    fun observeDrawing(ownerId: String, characterId: String): Flow<SavedKanaDrawing?> {
+        return drawingDao.observeDrawing(ownerId, characterId).map { entity ->
             entity?.toDomain()
         }
     }
 
-    suspend fun getDrawing(characterId: String): SavedKanaDrawing? {
-        return drawingDao.getDrawing(characterId)?.toDomain()
+    suspend fun getDrawing(ownerId: String, characterId: String): SavedKanaDrawing? {
+        return drawingDao.getDrawing(ownerId, characterId)?.toDomain()
     }
 
     suspend fun saveDrawing(
+        ownerId: String,
         characterId: String,
         strokes: List<SavedStroke>,
         canvasWidth: Float,
         canvasHeight: Float
     ) {
         if (strokes.isEmpty()) return
-        // Future cloud sync: associate drawing with googleUserId
         val entity = KanaDrawingEntity(
+            ownerId = ownerId,
             characterId = characterId,
             strokesJson = DrawingSerializer.encode(strokes),
             canvasWidth = canvasWidth,

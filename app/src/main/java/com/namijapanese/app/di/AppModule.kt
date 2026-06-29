@@ -27,7 +27,7 @@ object AppModule {
             NamiDatabase::class.java,
             "nami_japanese_database"
         )
-            .addMigrations(NamiDatabase.MIGRATION_1_2, NamiDatabase.MIGRATION_2_3, NamiDatabase.MIGRATION_3_4)
+            .addMigrations(NamiDatabase.MIGRATION_1_2, NamiDatabase.MIGRATION_2_3, NamiDatabase.MIGRATION_3_4, NamiDatabase.MIGRATION_4_5)
             .build()
     }
 

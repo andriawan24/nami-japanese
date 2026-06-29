@@ -12,7 +12,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -23,6 +22,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.namijapanese.core.designsystem.component.NamiProgressBar
 
 @Composable
 fun ProgressScreen(viewModel: ProgressViewModel = hiltViewModel()) {
@@ -43,11 +43,11 @@ fun ProgressScreen(viewModel: ProgressViewModel = hiltViewModel()) {
                 Spacer(modifier = Modifier.height(12.dp))
                 Text("${uiState.totalLearned} / ${uiState.totalCharacters}", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
                 Spacer(modifier = Modifier.height(8.dp))
-                LinearProgressIndicator(
-                    progress = { uiState.overallProgress },
+                NamiProgressBar(
+                    progress = uiState.overallProgress,
                     modifier = Modifier.fillMaxWidth().height(8.dp),
-                    color = MaterialTheme.colorScheme.primary,
-                    trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                    fillColor = MaterialTheme.colorScheme.primary,
+                    trackColor = MaterialTheme.colorScheme.surfaceVariant
                 )
             }
         }
@@ -81,11 +81,11 @@ fun ProgressScreen(viewModel: ProgressViewModel = hiltViewModel()) {
                     Text("$hiraganaPercent%", color = MaterialTheme.colorScheme.primary)
                 }
                 Spacer(modifier = Modifier.height(8.dp))
-                LinearProgressIndicator(
-                    progress = { if (uiState.totalHiragana > 0) uiState.learnedHiragana.toFloat() / uiState.totalHiragana else 0f },
+                NamiProgressBar(
+                    progress = if (uiState.totalHiragana > 0) uiState.learnedHiragana.toFloat() / uiState.totalHiragana else 0f,
                     modifier = Modifier.fillMaxWidth().height(8.dp),
-                    color = MaterialTheme.colorScheme.primary,
-                    trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                    fillColor = MaterialTheme.colorScheme.primary,
+                    trackColor = MaterialTheme.colorScheme.surfaceVariant
                 )
             }
         }
@@ -102,11 +102,11 @@ fun ProgressScreen(viewModel: ProgressViewModel = hiltViewModel()) {
                     Text("$katakanaPercent%", color = MaterialTheme.colorScheme.secondary)
                 }
                 Spacer(modifier = Modifier.height(8.dp))
-                LinearProgressIndicator(
-                    progress = { if (uiState.totalKatakana > 0) uiState.learnedKatakana.toFloat() / uiState.totalKatakana else 0f },
+                NamiProgressBar(
+                    progress = if (uiState.totalKatakana > 0) uiState.learnedKatakana.toFloat() / uiState.totalKatakana else 0f,
                     modifier = Modifier.fillMaxWidth().height(8.dp),
-                    color = MaterialTheme.colorScheme.secondary,
-                    trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                    fillColor = MaterialTheme.colorScheme.secondary,
+                    trackColor = MaterialTheme.colorScheme.surfaceVariant
                 )
             }
         }

@@ -9,6 +9,7 @@ import com.namijapanese.core.data.repository.ProgressRepository
 import com.namijapanese.core.data.repository.StreakRepository
 import com.namijapanese.core.data.repository.SavedStroke
 import com.namijapanese.core.data.repository.SavedStrokePoint
+import com.namijapanese.core.datastore.AuthDataStore
 import com.namijapanese.core.model.KanaCharacter
 import com.namijapanese.core.model.UserProgress
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -16,6 +17,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -47,7 +49,8 @@ class WritingPracticeViewModel @Inject constructor(
     private val kanaRepository: KanaRepository,
     private val progressRepository: ProgressRepository,
     private val streakRepository: StreakRepository,
-    private val drawingRepository: DrawingRepository
+    private val drawingRepository: DrawingRepository,
+    private val authDataStore: AuthDataStore
 ) : ViewModel() {
 
     private val characterId: String = savedStateHandle["characterId"] ?: ""
@@ -55,15 +58,26 @@ class WritingPracticeViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(WritingUiState())
     val uiState: StateFlow<WritingUiState> = _uiState.asStateFlow()
 
+    private var currentOwnerId: String = "local_legacy"
+
     init {
+        viewModelScope.launch {
+            currentOwnerId = resolveOwnerId()
+        }
         loadCharacter()
+    }
+
+    private suspend fun resolveOwnerId(): String {
+        val session = authDataStore.userSessionFlow.first()
+        return session.userId ?: session.googleUserId ?: session.email ?: "local_legacy"
     }
 
     private fun loadCharacter() {
         viewModelScope.launch {
             try {
                 val character = kanaRepository.getCharacterById(characterId)
-                val existingProgress = progressRepository.getProgress(characterId)
+                val ownerId = resolveOwnerId()
+                val existingProgress = progressRepository.getProgress(ownerId, characterId)
                 _uiState.update {
                     it.copy(
                         character = character,
@@ -154,6 +168,7 @@ class WritingPracticeViewModel @Inject constructor(
 
             try {
                 val character = state.character
+                val ownerId = resolveOwnerId()
 
                 val simplified = withContext(Dispatchers.Default) {
                     simplifiedStrokesForScoring(state.strokes)
@@ -170,21 +185,22 @@ class WritingPracticeViewModel @Inject constructor(
                     "Try writing bigger and closer to the guide."
                 }
 
-                progressRepository.updateWritingScore(characterId, score)
-                streakRepository.updateStreak()
+                progressRepository.updateWritingScore(ownerId, characterId, score)
+                streakRepository.updateStreak(ownerId)
                 progressRepository.recordPracticeSession(
+                    ownerId = ownerId,
                     characterId = characterId,
                     score = score,
                     passed = passed
                 )
 
-                // Save drawing strokes for Kana Detail visual association
                 val savedStrokes = state.strokes.map { stroke ->
                     SavedStroke(
                         points = stroke.points.map { (x, y) -> SavedStrokePoint(x, y) }
                     )
                 }
                 drawingRepository.saveDrawing(
+                    ownerId = ownerId,
                     characterId = characterId,
                     strokes = savedStrokes,
                     canvasWidth = state.canvasWidth,
@@ -228,8 +244,6 @@ class WritingPracticeViewModel @Inject constructor(
             }
     }
 
-    // ==================== HEURISTIC SCORING ONLY ====================
-
     private fun calculateHeuristicScore(
         strokes: List<Stroke>,
         character: KanaCharacter,
@@ -238,15 +252,12 @@ class WritingPracticeViewModel @Inject constructor(
     ): Int {
         var score = 0
 
-        // Has strokes: +20
         if (strokes.isNotEmpty()) score += 20
 
-        // Enough total points: +20
         val totalPoints = strokes.sumOf { it.points.size }
         if (totalPoints >= 50) score += 20
         else if (totalPoints >= 20) score += 10
 
-        // Stroke count close to expected: +25
         val expected = character.strokeCount.coerceAtLeast(1)
         val drawn = strokes.size
         val strokeDiff = kotlin.math.abs(expected - drawn)
@@ -257,7 +268,6 @@ class WritingPracticeViewModel @Inject constructor(
             else -> score += 5
         }
 
-        // Drawing size/coverage: +20
         val bounds = calculateBoundingBox(strokes)
         if (bounds != null) {
             val width = bounds.second.first - bounds.first.first
@@ -278,7 +288,6 @@ class WritingPracticeViewModel @Inject constructor(
             }
         }
 
-        // Center position: +15
         if (bounds != null && canvasWidth > 0 && canvasHeight > 0) {
             val centerX = (bounds.first.first + bounds.second.first) / 2f
             val centerY = (bounds.first.second + bounds.second.second) / 2f

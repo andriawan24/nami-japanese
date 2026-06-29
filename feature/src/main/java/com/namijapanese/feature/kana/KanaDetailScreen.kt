@@ -63,6 +63,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.namijapanese.core.R
 import com.namijapanese.core.data.repository.SavedKanaDrawing
 import com.namijapanese.core.designsystem.component.NamiPrimaryButton
+import com.namijapanese.core.designsystem.component.NamiProgressBar
 import com.namijapanese.core.designsystem.component.label
 import com.namijapanese.core.model.KanaCharacter
 import java.util.Locale
@@ -122,6 +123,16 @@ fun KanaDetailScreen(
 
                 // Stats Row
                 KanaStatsRow(character)
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Score Breakdown Card
+                KanaScoreBreakdownCard(
+                    writingScore = character.bestWritingScore,
+                    quizScore = character.bestQuizScore,
+                    totalScore = character.totalScore,
+                    isCompleted = character.isCompleted
+                )
 
                 Spacer(modifier = Modifier.height(24.dp))
 
@@ -619,6 +630,158 @@ private fun SavedWritingCard(drawing: SavedKanaDrawing) {
                     }
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun KanaScoreBreakdownCard(
+    writingScore: Int,
+    quizScore: Int,
+    totalScore: Int,
+    isCompleted: Boolean,
+    modifier: Modifier = Modifier
+) {
+    val hint = when {
+        totalScore == 0 -> "Start with writing practice."
+        writingScore > 0 && quizScore == 0 -> "Complete the quiz to master this kana."
+        quizScore > 0 && writingScore == 0 -> "Complete writing practice to master this kana."
+        totalScore < 90 -> "Reach 90/100 to complete this kana."
+        else -> "Kana mastered."
+    }
+
+    Card(
+        modifier = modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = if (isCompleted) MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
+            else MaterialTheme.colorScheme.surface
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(20.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Score Breakdown",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                if (isCompleted) {
+                    Icon(
+                        Icons.Default.Check,
+                        contentDescription = "Completed",
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+            }
+
+            // Total score progress
+            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = "Total Score",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Text(
+                        text = "$totalScore/100",
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                }
+                NamiProgressBar(
+                    progress = totalScore / 100f,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(6.dp),
+                    fillColor = if (isCompleted) MaterialTheme.colorScheme.primary
+                    else MaterialTheme.colorScheme.primary.copy(alpha = 0.7f),
+                    trackColor = MaterialTheme.colorScheme.surfaceVariant
+                )
+            }
+
+            // Writing and Quiz breakdown
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = "Writing",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Text(
+                            text = "$writingScore/50",
+                            style = MaterialTheme.typography.bodySmall,
+                            fontWeight = FontWeight.Medium,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                    }
+                    NamiProgressBar(
+                        progress = writingScore / 50f,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(4.dp),
+                        fillColor = MaterialTheme.colorScheme.secondary,
+                        trackColor = MaterialTheme.colorScheme.surfaceVariant
+                    )
+                }
+
+                Column(modifier = Modifier.weight(1f)) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = "Quiz",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Text(
+                            text = "$quizScore/50",
+                            style = MaterialTheme.typography.bodySmall,
+                            fontWeight = FontWeight.Medium,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                    }
+                    NamiProgressBar(
+                        progress = quizScore / 50f,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(4.dp),
+                        fillColor = MaterialTheme.colorScheme.tertiary,
+                        trackColor = MaterialTheme.colorScheme.surfaceVariant
+                    )
+                }
+            }
+
+            // Hint
+            Text(
+                text = hint,
+                style = MaterialTheme.typography.bodySmall,
+                color = if (isCompleted) MaterialTheme.colorScheme.primary
+                else MaterialTheme.colorScheme.onSurfaceVariant
+            )
         }
     }
 }

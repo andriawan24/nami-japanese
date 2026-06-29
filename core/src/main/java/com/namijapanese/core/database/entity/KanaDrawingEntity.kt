@@ -2,11 +2,19 @@ package com.namijapanese.core.database.entity
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
-import androidx.room.PrimaryKey
+import androidx.room.Index
 
-@Entity(tableName = "kana_drawings")
+@Entity(
+    tableName = "kana_drawings",
+    primaryKeys = ["owner_id", "character_id"],
+    indices = [
+        Index(value = ["owner_id"])
+    ]
+)
 data class KanaDrawingEntity(
-    @PrimaryKey
+    @ColumnInfo(name = "owner_id")
+    val ownerId: String,
+
     @ColumnInfo(name = "character_id")
     val characterId: String,
 

@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.namijapanese.core.data.repository.KanaRepository
 import com.namijapanese.core.data.repository.ProgressRepository
+import com.namijapanese.core.datastore.AuthDataStore
 import com.namijapanese.core.model.KanaCharacter
 import com.namijapanese.core.model.KanaGroup
 import com.namijapanese.core.model.KanaStatus
@@ -12,6 +13,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -27,7 +29,8 @@ data class KanaListUiState(
 @HiltViewModel
 class KanaListViewModel @Inject constructor(
     private val kanaRepository: KanaRepository,
-    private val progressRepository: ProgressRepository
+    private val progressRepository: ProgressRepository,
+    private val authDataStore: AuthDataStore
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(KanaListUiState())
@@ -35,6 +38,7 @@ class KanaListViewModel @Inject constructor(
 
     private var currentType: KanaType? = null
     private var userManuallySelectedGroup = false
+    private var currentOwnerId: String = "local_legacy"
 
     fun setType(type: KanaType) {
         val typeChanged = currentType != type
@@ -61,11 +65,15 @@ class KanaListViewModel @Inject constructor(
     }
 
     fun onResume() {
+        viewModelScope.launch {
+            currentOwnerId = resolveOwnerId()
+        }
         refreshProgress(allowAutoAdvance = true)
     }
 
     fun refreshProgress(allowAutoAdvance: Boolean = false) {
         viewModelScope.launch {
+            currentOwnerId = resolveOwnerId()
             val characters = loadCharactersWithProgress()
             val completedGroups = computeCompletedGroups(characters)
             var selectedGroup = _uiState.value.selectedGroup
@@ -90,8 +98,14 @@ class KanaListViewModel @Inject constructor(
         }
     }
 
+    private suspend fun resolveOwnerId(): String {
+        val session = authDataStore.userSessionFlow.first()
+        return session.userId ?: session.googleUserId ?: session.email ?: "local_legacy"
+    }
+
     private fun loadCharacters(preserveGroup: Boolean) {
         viewModelScope.launch {
+            currentOwnerId = resolveOwnerId()
             val characters = loadCharactersWithProgress()
             val completedGroups = computeCompletedGroups(characters)
             val group = if (preserveGroup) _uiState.value.selectedGroup
@@ -127,15 +141,12 @@ class KanaListViewModel @Inject constructor(
         val allGroups = KanaGroup.entries
         val currentIndex = allGroups.indexOf(current)
 
-        // Check groups after current
         for (i in (currentIndex + 1) until allGroups.size) {
             if (allGroups[i] !in completedGroups) return allGroups[i]
         }
-        // Wrap around to beginning
         for (i in 0 until currentIndex) {
             if (allGroups[i] !in completedGroups) return allGroups[i]
         }
-        // All completed
         return null
     }
 
@@ -145,7 +156,7 @@ class KanaListViewModel @Inject constructor(
 
     private suspend fun loadCharactersWithProgress(): List<KanaCharacter> {
         val characters = kanaRepository.getCharacters(currentType ?: KanaType.HIRAGANA)
-        val allProgress = progressRepository.getAllProgress().associateBy { it.characterId }
+        val allProgress = progressRepository.getAllProgress(currentOwnerId).associateBy { it.characterId }
 
         return characters.map { char ->
             val progress = allProgress[char.id]

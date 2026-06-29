@@ -18,10 +18,12 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -44,6 +46,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.namijapanese.core.R
+import com.namijapanese.core.designsystem.component.NamiProgressBar
 import com.namijapanese.core.designsystem.component.ProfileAvatar
 import java.time.DayOfWeek
 
@@ -54,6 +57,8 @@ fun HomeScreen(
     onStartKatakana: () -> Unit,
     onStartQuiz: () -> Unit,
     onSettingsClick: () -> Unit = {},
+    onContinueLearning: (String) -> Unit = {},
+    onContinueLearningList: () -> Unit = {},
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -129,7 +134,23 @@ fun HomeScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            ContinueLearningCard(onClick = onStartHiragana)
+            ContinueLearningCard(
+                uiState = uiState.continueLearning,
+                onContinueClick = { action, characterId ->
+                    when (action) {
+                        ContinueLearningAction.OpenKanaDetail -> {
+                            characterId?.let { onContinueLearning(it) }
+                        }
+                        ContinueLearningAction.OpenKanaList -> {
+                            onContinueLearningList()
+                        }
+                    }
+                }
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            DailyGoalCard(dailyGoal = uiState.dailyGoal)
 
             Spacer(modifier = Modifier.height(24.dp))
 
@@ -246,12 +267,15 @@ private fun StatCard(
 }
 
 @Composable
-private fun ContinueLearningCard(onClick: () -> Unit) {
+private fun ContinueLearningCard(
+    uiState: ContinueLearningUiState,
+    onContinueClick: (ContinueLearningAction, String?) -> Unit
+) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(24.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
-        onClick = onClick
+        onClick = { onContinueClick(uiState.action, uiState.characterId) }
     ) {
         Row(
             modifier = Modifier
@@ -261,32 +285,27 @@ private fun ContinueLearningCard(onClick: () -> Unit) {
         ) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = "Continue Learning",
+                    text = uiState.title,
                     style = MaterialTheme.typography.labelMedium,
                     fontWeight = FontWeight.Medium,
                     color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.6f)
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = "Hiragana",
+                    text = uiState.character ?: "All",
                     style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onPrimaryContainer
                 )
-                Text(
-                    text = "Part 1",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
-                )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = "Master the vowel sounds of Japanese.",
+                    text = uiState.subtitle,
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.6f)
                 )
                 Spacer(modifier = Modifier.height(12.dp))
                 Text(
-                    text = "Start Lesson →",
+                    text = if (uiState.action == ContinueLearningAction.OpenKanaList) "Review Kana →" else "Continue →",
                     style = MaterialTheme.typography.labelLarge,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary
@@ -303,7 +322,7 @@ private fun ContinueLearningCard(onClick: () -> Unit) {
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "あ",
+                    text = uiState.character ?: "あ",
                     fontSize = 36.sp,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary
@@ -314,17 +333,76 @@ private fun ContinueLearningCard(onClick: () -> Unit) {
 }
 
 @Composable
+private fun DailyGoalCard(dailyGoal: DailyGoalUiState) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(24.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = if (dailyGoal.isCompleted) MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
+            else MaterialTheme.colorScheme.surface
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(20.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Daily Goal",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Medium
+                )
+                if (dailyGoal.isCompleted) {
+                    Icon(
+                        Icons.Default.Check,
+                        contentDescription = "Completed",
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = "${dailyGoal.completed} / ${dailyGoal.target} today",
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            NamiProgressBar(
+                progress = dailyGoal.progress,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(8.dp),
+                fillColor = if (dailyGoal.isCompleted) MaterialTheme.colorScheme.primary
+                else MaterialTheme.colorScheme.primary.copy(alpha = 0.7f),
+                trackColor = MaterialTheme.colorScheme.surfaceVariant
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Text(
+                text = dailyGoal.message,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+    }
+}
+
+@Composable
 private fun WeeklyProgressCard(weeklyProgress: WeeklyProgressUiState) {
-    val days = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
-    val dayOfWeekMap = mapOf(
-        DayOfWeek.MONDAY to 0,
-        DayOfWeek.TUESDAY to 1,
-        DayOfWeek.WEDNESDAY to 2,
-        DayOfWeek.THURSDAY to 3,
-        DayOfWeek.FRIDAY to 4,
-        DayOfWeek.SATURDAY to 5,
-        DayOfWeek.SUNDAY to 6
-    )
+    val days = remember { listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun") }
 
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -357,13 +435,13 @@ private fun WeeklyProgressCard(weeklyProgress: WeeklyProgressUiState) {
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            LinearProgressIndicator(
-                progress = { weeklyProgress.percent / 100f },
+            NamiProgressBar(
+                progress = weeklyProgress.percent / 100f,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(8.dp),
-                color = MaterialTheme.colorScheme.primary,
-                trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                fillColor = MaterialTheme.colorScheme.primary,
+                trackColor = MaterialTheme.colorScheme.surfaceVariant
             )
 
             Spacer(modifier = Modifier.height(16.dp))
